@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * Stellt die Benutzeroberfläche des
@@ -52,49 +53,57 @@ public class NavigationSystem {
 
 
 
-
-
     /**
      * Startet das Hauptmenü.
      */
-    public void start()
-    {boolean running = true;
+    public void start() {
 
-        while (running)
-        {
+        boolean running = true;
+
+        while (running) {
 
             showMenu();
 
-            int choice = Integer.parseInt(scanner.nextLine());
+            int choice =
+                    Integer.parseInt(
+                            scanner.nextLine()
+                    );
 
             switch (choice) {
 
                 case 1:
                     addCity();
+                    waitForEnter();
                     break;
 
                 case 2:
                     addRoad();
+                    waitForEnter();
                     break;
 
                 case 3:
                     roadNetworkGraph.showAllCities();
+                    waitForEnter();
                     break;
 
                 case 4:
                     displayRoadNetwork();
+                    waitForEnter();
                     break;
 
                 case 5:
                     startDFS();
+                    waitForEnter();
                     break;
 
                 case 6:
                     startBFS();
+                    waitForEnter();
                     break;
 
                 case 7:
                     startDijkstra();
+                    waitForEnter();
                     break;
 
                 case 8:
@@ -103,24 +112,29 @@ public class NavigationSystem {
 
                 case 0:
                     running = false;
-                    System.out.println(
-                            "\nProgramm beendet."
-                    );
+                    System.out.println("\nProgramm beendet.");
                     break;
 
                 default:
-                    System.out.println(
-                            "\nUngültige Eingabe."
-                    );
+                    System.out.println("\nUngültige Eingabe.");
             }
         }
     }
 
-    private void clearScreen() {
-        // ANSI Escape Code zum Löschen des Bildschirms
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+    private void waitForEnter() {
+        System.out.println(
+                "\nDrücken Sie die Eingabetaste, um fortzufahren..."
+        );
+        scanner.nextLine();
+        System.out.print("\nAuswahl: ");
 
+    }
+
+    private void clearScreen() {
+
+        for (int i = 0; i < 50; i++) {
+            System.out.println();
+        }
     }
 
     /**
@@ -145,10 +159,10 @@ public class NavigationSystem {
                 "4. Straßennetz anzeigen"
         );
         System.out.println(
-                "5. DFS starten"
+                "5. DFS starten (Welche Städte sind von einer Startstadt aus erreichbar?)"
         );
         System.out.println(
-                "6. BFS starten"
+                "6. BFS starten (Suche eine Route mit den wenigsten Zwischenstopps zwischen zwei Städten.)"
         );
         System.out.println(
                 "7. Dijkstra starten"
@@ -161,9 +175,7 @@ public class NavigationSystem {
                 "0. Beenden"
         );
 
-        System.out.print(
-                "\nAuswahl: "
-        );
+        System.out.print("\nAuswahl: ");
     }
 
     /**
@@ -260,7 +272,20 @@ public class NavigationSystem {
             System.out.println("\nStadt nicht gefunden.");
             return;
         }
-        roadNetworkGraph.showReachableCitiesDFS(startCity);
+        Set<City> reachableCities = roadNetworkGraph.showReachableCitiesDFS(startCity);
+        drawDFS(startCity, reachableCities);
+    }
+
+    /**
+     * Visualisiert die DFS-Ergebnisse.
+     */
+    private void drawDFS(City startCity, Set<City> reachableCities) {
+        System.out.println("\nStartstadt: " + startCity);
+        System.out.println();
+
+        for (City city : reachableCities) {
+            System.out.println("└─ " + city);
+        }
     }
 
     /**
@@ -283,7 +308,40 @@ public class NavigationSystem {
         }
 
         System.out.println("Suche Route von " + startCity + " nach " + destinationCity);
-        roadNetworkGraph.findRouteWithFewestStopsBFS(startCity,destinationCity);
+        Set<City> visitedStops = roadNetworkGraph.findRouteWithFewestStopsBFS(startCity, destinationCity);
+        drawBFS(startCity,destinationCity,visitedStops);
+    }
+
+
+    /**
+     * Visualisiert die BFS-Ergebnisse.
+     */
+    private void drawBFS(
+            City startCity,
+            City destinationCity,
+            Set<City> visitedStops) {
+
+        System.out.println(
+                "\n===== BFS ====="
+        );
+
+        System.out.println("\nStartstadt: " + startCity);
+
+        System.out.println("Zielstadt: " + destinationCity);
+
+        if (visitedStops.contains(destinationCity)) {
+            System.out.println("\nZiel erreicht.");
+        }
+        else {
+            System.out.println("\nZiel nicht erreichbar.");
+        }
+
+        System.out.println("\nWährend der BFS-Suche besuchte Städte:");
+
+        for (City city : visitedStops) {
+            System.out.println(
+                    "└─ " + city);
+        }
     }
 
     /**

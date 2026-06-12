@@ -124,12 +124,13 @@ public class RoadNetworkGraph {
      *
      * @param startCity Startvertex
      */
-    public void showReachableCitiesDFS(City startCity) {
+    public Set<City> showReachableCitiesDFS(City startCity) {
         // Set zur Verfolgung besuchter Städte, um Endlosschleifen zu vermeiden.
-        Set<City> visitedCities = new HashSet<>();
+        Set<City> visitedCities = new LinkedHashSet<>();
 
         // Startet die rekursive DFS Traversierung.
         dfsRecursive(startCity, visitedCities);
+        return visitedCities;
     }
 
     /**
@@ -146,12 +147,11 @@ public class RoadNetworkGraph {
 
         // Markiert die aktuelle Stadt als besucht.
         visitedCities.add(currentCity);
-        System.out.println(currentCity);
 
 
         // Holt die Straßenverbindungen der aktuellen Stadt.
-        List<RoadConnection> roads =
-                roadNetwork.get(currentCity);
+        List<RoadConnection> roads = roadNetwork.get(currentCity);
+
 
         // Rekursive DFS Traversierung für alle benachbarten Städte.
         for (RoadConnection road : roads) {
@@ -177,7 +177,7 @@ public class RoadNetworkGraph {
      * @param startCity Startvertex
      * @param destinationCity Zielvertex
      */
-    public void findRouteWithFewestStopsBFS(City startCity, City destinationCity) {
+    public Set<City> findRouteWithFewestStopsBFS(City startCity, City destinationCity) {
 
         // Queue für die BFS Traversierung,
         // um die Städte in der Reihenfolge ihres Besuchs zu speichern.
@@ -186,8 +186,9 @@ public class RoadNetworkGraph {
 
         // Set zur Verfolgung besuchter Städte, um Endlosschleifen zu vermeiden.
         Set<City> visitedCities =
-                new HashSet<>();
+                new LinkedHashSet<>();
 
+        // Fügt die Startstadt zur Queue hinzu, damit die Traversierung beginnt.
         citiesToVisit.add(startCity);
 
         // Markiert die Startstadt als besucht, um zu verhindern, dass sie erneut in die Queue aufgenommen wird.
@@ -201,8 +202,7 @@ public class RoadNetworkGraph {
 
             // Überprüft, ob die aktuelle Stadt das Ziel ist.
             if (currentCity.equals(destinationCity)) {
-                System.out.println("\nZiel erreicht: " + currentCity);
-                return;
+                break;
             }
 
             // Holt die Straßenverbindungen der aktuellen Stadt.
@@ -214,24 +214,22 @@ public class RoadNetworkGraph {
 
                 // Holt die benachbarte Stadt am Ende der Straße.
                 City neighboringCity = road.getDestinationCity();
-                System.out.println("Besuche: " + currentCity);
-
 
                 // Wenn die benachbarte Stadt noch nicht besucht wurde,
                 // wird sie zur Queue hinzugefügt und als besucht markiert.
                 if (!visitedCities.contains(neighboringCity)) {
 
-                    visitedCities.add(
-                            neighboringCity
-                    );
+                    if (neighboringCity.equals(destinationCity)) {
+                        visitedCities.add(neighboringCity);
+                        return visitedCities;
+                    }
 
                     // Fügt die benachbarte Stadt zur Queue hinzu, damit sie in zukünftigen Iterationen besucht wird.
-                    citiesToVisit.add(
-                            neighboringCity
-                    );
+                    citiesToVisit.add(neighboringCity);
                 }
             }
         }
+        return visitedCities;
     }
 
 
