@@ -28,10 +28,14 @@ public class NavigationSystem {
         City innsbruck = new City("Innsbruck");
         City klagenfurt = new City("Klagenfurt");
 
+        City paris = new City("Paris");
+        roadNetworkGraph.addCity(paris);
+
         roadNetworkGraph.addCity(vienna);
         roadNetworkGraph.addCity(linz);
         roadNetworkGraph.addCity(graz);
         roadNetworkGraph.addCity(salzburg);
+        roadNetworkGraph.addCity(innsbruck);
         roadNetworkGraph.addCity(innsbruck);
         roadNetworkGraph.addCity(klagenfurt);
 
@@ -261,32 +265,59 @@ public class NavigationSystem {
     /**
      * Startet DFS.
      */
+    /**
+     * Startet DFS.
+     */
     private void startDFS() {
 
-        System.out.print("\nStartstadt:");
+        System.out.print("\nStartstadt: ");
+        String startCityName = scanner.nextLine();
 
-        String cityName = scanner.nextLine();
-        City startCity = roadNetworkGraph.findCityByName(cityName);
+        System.out.print("Zielstadt: ");
+        String destinationCityName = scanner.nextLine();
 
-        if (startCity == null) {
+        City startCity = roadNetworkGraph.findCityByName(startCityName);
+
+        City destinationCity = roadNetworkGraph.findCityByName(destinationCityName);
+
+
+        if (startCity == null || destinationCity == null) {
             System.out.println("\nStadt nicht gefunden.");
             return;
         }
-        Set<City> reachableCities = roadNetworkGraph.showReachableCitiesDFS(startCity);
-        drawDFS(startCity, reachableCities);
+
+        Set<City> visitedCities = roadNetworkGraph.
+                showReachableCitiesDFS(startCity,destinationCity);
+
+        drawDFS(startCity, destinationCity, visitedCities);
     }
 
     /**
-     * Visualisiert die DFS-Ergebnisse.
+     * Visualisiert die DFS-Suche.
      */
-    private void drawDFS(City startCity, Set<City> reachableCities) {
-        System.out.println("\nStartstadt: " + startCity);
-        System.out.println();
+    private void drawDFS(City startCity, City destinationCity, Set<City> visitedCities) {
 
-        for (City city : reachableCities) {
+        System.out.println("\nStartstadt: " + startCity);
+
+        System.out.println("Zielstadt: " + destinationCity);
+
+        System.out.println(
+                "\nDurchsuchte Städte:"
+        );
+
+        for (City city : visitedCities) {
             System.out.println("└─ " + city);
         }
+
+        if (visitedCities.contains(destinationCity)) {
+            System.out.println("\nRoute möglich.");
+        }
+        else {
+            System.out.println("\nRoute nicht möglich.");
+        }
     }
+
+
 
     /**
      * Startet BFS.

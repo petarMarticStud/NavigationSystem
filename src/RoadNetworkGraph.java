@@ -124,12 +124,12 @@ public class RoadNetworkGraph {
      *
      * @param startCity Startvertex
      */
-    public Set<City> showReachableCitiesDFS(City startCity) {
+    public Set<City> showReachableCitiesDFS(City startCity, City destinationCity) {
         // Set zur Verfolgung besuchter Städte, um Endlosschleifen zu vermeiden.
         Set<City> visitedCities = new LinkedHashSet<>();
 
         // Startet die rekursive DFS Traversierung.
-        dfsRecursive(startCity, visitedCities);
+        dfsRecursive(startCity, destinationCity, visitedCities);
         return visitedCities;
     }
 
@@ -139,32 +139,37 @@ public class RoadNetworkGraph {
      * @param currentCity Aktueller Vertex
      * @param visitedCities Bereits besuchte Vertices
      */
-    private void dfsRecursive(City currentCity, Set<City> visitedCities) {
-        // Wenn die aktuelle Stadt bereits besucht wurde, wird die Rekursion gestoppt.
-        if (visitedCities.contains(currentCity)) {
-            return;
+    private boolean dfsRecursive(City currentCity,City desinationCity,Set<City> visitedCities) {
+
+        //Wurde die Stadt schon besucht?
+        if(visitedCities.contains(currentCity)) {
+            return false;
         }
 
         // Markiert die aktuelle Stadt als besucht.
         visitedCities.add(currentCity);
 
+        // Überprüft, ob die aktuelle Stadt das Ziel ist.
+        if (currentCity.equals(desinationCity)) {
+            return true;
+        }
+
 
         // Holt die Straßenverbindungen der aktuellen Stadt.
         List<RoadConnection> roads = roadNetwork.get(currentCity);
 
-
-        // Rekursive DFS Traversierung für alle benachbarten Städte.
+        // Durchläuft alle Straßenverbindungen der aktuellen Stadt.
         for (RoadConnection road : roads) {
 
             // Holt die benachbarte Stadt am Ende der Straße.
             City neighboringCity = road.getDestinationCity();
 
-            // Rekursive DFS Traversierung für die benachbarte Stadt.
-            dfsRecursive(
-                    neighboringCity,
-                    visitedCities
-            );
+            boolean routeFound = dfsRecursive(neighboringCity,desinationCity,visitedCities);
+            if (routeFound) {
+                return true;
+            }
         }
+        return false;
     }
 
 
@@ -224,8 +229,7 @@ public class RoadNetworkGraph {
                         return visitedCities;
                     }
 
-                    // Fügt die benachbarte Stadt zur Queue hinzu, damit sie in zukünftigen Iterationen besucht wird.
-                    citiesToVisit.add(neighboringCity);
+                    // Fügt die benachbarte Stadt zur Queue hinzu, damit sie in zukünftigen Iterationen besucht wird.*                    citiesToVisit.add(neighboringCity);
                 }
             }
         }
