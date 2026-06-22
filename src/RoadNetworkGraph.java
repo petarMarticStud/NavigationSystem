@@ -223,13 +223,15 @@ public class RoadNetworkGraph {
                 // Wenn die benachbarte Stadt noch nicht besucht wurde,
                 // wird sie zur Queue hinzugefügt und als besucht markiert.
                 if (!visitedCities.contains(neighboringCity)) {
+                    visitedCities.add(neighboringCity);
 
                     if (neighboringCity.equals(destinationCity)) {
                         visitedCities.add(neighboringCity);
                         return visitedCities;
                     }
 
-                    // Fügt die benachbarte Stadt zur Queue hinzu, damit sie in zukünftigen Iterationen besucht wird.*                    citiesToVisit.add(neighboringCity);
+                    // Fügt die benachbarte Stadt zur Queue hinzu, damit sie in zukünftigen Iterationen besucht wird.*
+                    citiesToVisit.add(neighboringCity);
                 }
             }
         }
@@ -246,7 +248,7 @@ public class RoadNetworkGraph {
      * @param startCity Startvertex
      * @param destinationCity Zielvertex
      */
-    public void findShortestRouteDijkstra(City startCity, City destinationCity) {
+    public int findShortestRouteDijkstra(City startCity, City destinationCity) {
 
         // Map zur Speicherung der kürzesten bekannten Distanz
         // von der Startstadt zu jeder anderen Stadt.
@@ -268,12 +270,10 @@ public class RoadNetworkGraph {
         // damit sie als erstes besucht wird.
         citiesToVisit.add(startCity);
 
-
         while (!citiesToVisit.isEmpty()) {
             // Holt die Stadt mit der aktuell kürzesten bekannten Distanz
             // aus der PriorityQueue.
             City currentCity = citiesToVisit.poll();
-            System.out.println("\nAktuelle Stadt: " + currentCity);
 
             //Strassenverbindungen der aktuellen Stadt abrufen
             List<RoadConnection> roads = roadNetwork.get(currentCity);
@@ -299,15 +299,9 @@ public class RoadNetworkGraph {
                     // Aktualisiert die kürzeste bekannte Distanz zur benachbarten Stadt.
                     shortestDistances.put(neighboringCity, newDistance);
                     citiesToVisit.add(neighboringCity);
-
-                    System.out.println(
-                            "Neue Distanz zu " + neighboringCity + " gefunden: "
-                                    + newDistance + " km");
                 }
             }
-
-            System.out.println("Kürzeste Distanz von " + startCity + " nach " + destinationCity + ": "
-                            + shortestDistances.get(destinationCity) + " km");
         }
+        return shortestDistances.get(destinationCity);
     }
 }

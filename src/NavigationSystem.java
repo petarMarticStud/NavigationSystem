@@ -68,10 +68,23 @@ public class NavigationSystem {
 
             showMenu();
 
-            int choice =
-                    Integer.parseInt(
-                            scanner.nextLine()
-                    );
+            int choice;
+
+            try {
+
+                choice = Integer.parseInt(
+                        scanner.nextLine()
+                );
+
+            }
+            catch (NumberFormatException exception) {
+
+                System.out.println(
+                        "\nUngültige Eingabe. Bitte eine Zahl eingeben."
+                );
+
+                continue;
+            }
 
             switch (choice) {
 
@@ -120,7 +133,9 @@ public class NavigationSystem {
                     break;
 
                 default:
-                    System.out.println("\nUngültige Eingabe.");
+                    System.out.println(
+                            "\nUngültige Eingabe."
+                    );
             }
         }
     }
@@ -395,6 +410,12 @@ public class NavigationSystem {
             return;
         }
 
-        roadNetworkGraph.findShortestRouteDijkstra(startCity, destinationCity);
+        int distance= roadNetworkGraph.findShortestRouteDijkstra(startCity, destinationCity);
+
+        System.out.println(
+                "\nKürzeste Distanz von " + startCity
+                        + " nach " + destinationCity + ": "
+                        + distance
+                        + " km");
     }
 }
